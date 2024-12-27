@@ -38,7 +38,7 @@ for i in year_list:
 wait.until(EC.element_to_be_clickable(year_item))
 year_item.click()
 
-for i in copy_year_list[5:]:
+for i in copy_year_list[11:]:
     year_item = driver.find_element(By.CSS_SELECTOR, "[aria-label='Season']")
     wait.until(EC.element_to_be_clickable(year_item))
     year_item.click()
@@ -76,7 +76,8 @@ for i in copy_year_list[5:]:
         download.click()
         description = driver.find_element(By.CSS_SELECTOR, "[class='chakra-text css-d6i95f']").text
         if description.startswith('Through Week Ending'):
-            description = description.replace('Through Week Ending ', ',')
+            description = description.replace('Through Week Ending: ', ' , ')
+            description = description.replace('/', '-')
         else:
             description = description.replace('Through the ', '')
         while not os.path.exists('data/stats.csv'):
