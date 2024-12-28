@@ -18,12 +18,12 @@ prefs = {'download.default_directory': r"C:\Users\tungd\Downloads\PGA-Tour-Scrap
          'download.prompt_for_download': False}
 options.add_experimental_option('prefs', prefs)
 driver = webdriver.Chrome(options=options)
-driver.get('https://www.pgatour.com/stats/detail/02675') #SG Total
+driver.get('https://www.pgatour.com/stats/detail/02674')
 #https://www.pgatour.com/stats/detail/02674 SG T2G
 #https://www.pgatour.com/stats/detail/02415 Use to calculate number of pars per round
 #https://www.pgatour.com/stats/detail/107 Birdies
 #https://www.pgatour.com/stats/detail/106 Eagles
-#https://www.pgatour.com/stats/detail/02419 Bogeys + Double Bogeys
+#https://www.pgatour.com/stats/detail/02419 Bogeys + Double Bogeys (Latter inferred from Birdie Bogey Ratio)
 wait = WebDriverWait(driver, 20)
 actions = ActionChains(driver)
 
@@ -38,7 +38,7 @@ for i in year_list:
 wait.until(EC.element_to_be_clickable(year_item))
 year_item.click()
 
-for i in copy_year_list[11:]:
+for i in copy_year_list:
     year_item = driver.find_element(By.CSS_SELECTOR, "[aria-label='Season']")
     wait.until(EC.element_to_be_clickable(year_item))
     year_item.click()
@@ -61,10 +61,16 @@ for i in copy_year_list[11:]:
     tournament_item.click()
 
     for j in copy_tournament_list:
+        if i == '2022-23' and j in ['Fortinet Championship', 'Sanderson Farms Championship', "Shriners Children's Open", 'The RSM Classic']: #Events held twice
+            continue
         tournament_item = driver.find_element(By.CSS_SELECTOR, "[class='chakra-menu__menu-button css-1142au9']")
         wait.until(EC.element_to_be_clickable(tournament_item))
         tournament_item.click()
-        tournament = driver.find_elements(By.CLASS_NAME, "css-mcc4c4")[2].find_element(By.XPATH, f"""//*[contains(text(), "{j}")]""")
+        try:
+            tournament = driver.find_elements(By.CLASS_NAME, "css-mcc4c4")[2].find_element(By.XPATH, f"""//*[contains(text(), "{j}")]""")
+        except:
+            print(f"Could not find {j} in {i}")
+            continue
         actions.move_to_element(tournament).perform()
         wait.until(EC.element_to_be_clickable(tournament))
         tournament.click()
@@ -82,6 +88,6 @@ for i in copy_year_list[11:]:
             description = description.replace('Through the ', '')
         while not os.path.exists('data/stats.csv'):
             time.sleep(1)
-        os.rename('data/stats.csv', f'data/{i}_{description.split(', ')[1]}_{j}_SG_Total.csv')
+        os.rename('data/stats.csv', f'data/{i}_{description.split(', ')[1]}_{j}_SG_T2G.csv')
     
 driver.close()
