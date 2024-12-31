@@ -9,27 +9,30 @@ import time
 capa = DesiredCapabilities.CHROME
 capa["pageLoadStrategy"] = "none"
 
-SAVE_DIRECTORY = 'data/Tournament Results/'
+SAVE_DIRECTORY = 'data/Driving Accuracy/'
 
 options = webdriver.ChromeOptions() 
 options.add_argument('--ignore-certificate-errors')
 options.add_argument('--ignore-ssl-errors')
 options.add_argument("--start-maximized")
 options.add_argument("--disable-gpu")
-prefs = {'download.default_directory': r"C:\Users\tungd\Downloads\PGA-Tour-Scraper\data\Tournament Results",
+prefs = {'download.default_directory': r"C:\Users\tungd\Downloads\PGA-Tour-Scraper\data\Driving Accuracy",
          'download.prompt_for_download': False}
 options.add_experimental_option('prefs', prefs)
 driver = webdriver.Chrome(options=options)
-driver.get('https://www.pgatour.com/stats/detail/109')
+driver.get('https://www.pgatour.com/stats/detail/102')
 #https://www.pgatour.com/stats/detail/02674 SG T2G
 #https://www.pgatour.com/stats/detail/02415 Use to calculate number of pars per round
 #https://www.pgatour.com/stats/detail/107 Birdies
 #https://www.pgatour.com/stats/detail/02419 Bogeys
+#https://www.pgatour.com/stats/detail/101 #Driving Distance
+#https://www.pgatour.com/stats/detail/102 #Driving Accuracy
 #https://www.pgatour.com/stats/detail/109 #Money List (Finishing Position)
 wait = WebDriverWait(driver, 20)
 actions = ActionChains(driver)
 
 #Tournament Only
+"""
 toggle_item = driver.find_element(By.CSS_SELECTOR, "[aria-label='Time Period']")
 wait.until(EC.element_to_be_clickable(toggle_item))
 toggle_item.click()
@@ -39,6 +42,7 @@ wait.until(EC.element_to_be_clickable(tournament_only))
 tournament_only.click()
 wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "[class='chakra-menu__menu-button css-1142au9']")))
 driver.execute_script("window.stop();")
+"""
 
 year_item = driver.find_element(By.CSS_SELECTOR, "[aria-label='Season']")
 wait.until(EC.element_to_be_clickable(year_item))
@@ -105,6 +109,6 @@ for i in copy_year_list[17:]:
             time.sleep(1)
         text = j.replace('/', '-')
         text = text.replace(':', '')
-        os.rename(SAVE_DIRECTORY + 'stats.csv', f'{SAVE_DIRECTORY}/{i}_{description.split(', ')[1]}_{text}_Tournament_Results.csv')
+        os.rename(SAVE_DIRECTORY + 'stats.csv', f'{SAVE_DIRECTORY}/{i}_{description.split(', ')[1]}_{text}_Driving Accuracy.csv')
     
 driver.close()
