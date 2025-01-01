@@ -6,21 +6,23 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
 import os
 import time
+import csv
+
 capa = DesiredCapabilities.CHROME
 capa["pageLoadStrategy"] = "none"
 
-SAVE_DIRECTORY = 'data/Driving Accuracy/'
+
+SAVE_DIRECTORY = 'data/SG_Total/'
 
 options = webdriver.ChromeOptions() 
 options.add_argument('--ignore-certificate-errors')
 options.add_argument('--ignore-ssl-errors')
 options.add_argument("--start-maximized")
-options.add_argument("--disable-gpu")
-prefs = {'download.default_directory': r"C:\Users\tungd\Downloads\PGA-Tour-Scraper\data\Driving Accuracy",
+prefs = {'download.default_directory': r"C:\Users\tungd\Downloads\PGA-Tour-Scraper\data\SG_Total",
          'download.prompt_for_download': False}
 options.add_experimental_option('prefs', prefs)
 driver = webdriver.Chrome(options=options)
-driver.get('https://www.pgatour.com/stats/detail/102')
+driver.get('https://www.pgatour.com/stats/detail/02675')
 #https://www.pgatour.com/stats/detail/02674 SG T2G
 #https://www.pgatour.com/stats/detail/02415 Use to calculate number of pars per round
 #https://www.pgatour.com/stats/detail/107 Birdies
@@ -55,7 +57,7 @@ for i in year_list:
 wait.until(EC.element_to_be_clickable(year_item))
 year_item.click()
 
-for i in copy_year_list[17:]:
+for i in copy_year_list:
     year_item = driver.find_element(By.CSS_SELECTOR, "[aria-label='Season']")
     wait.until(EC.element_to_be_clickable(year_item))
     year_item.click()
@@ -73,42 +75,35 @@ for i in copy_year_list[17:]:
     tournament_list.pop(0)
     copy_tournament_list = []
     for j in tournament_list:
-        copy_tournament_list.insert(0, j.text)
+        copy_tournament_list.insert(0, j.get_attribute('data-index'))
     wait.until(EC.element_to_be_clickable(tournament_item))
     tournament_item.click()
 
     for j in copy_tournament_list:
-        if i == '2022-2023' and j in ['Fortinet Championship', 'Sanderson Farms Championship', "Shriners Children's Open", 'The RSM Classic',
-        'ZOZO CHAMPIONSHIP', 'World Wide Technology Championship', 'Butterfield Bermuda Championship', 'Hero World Challenge']: #Events held twice
-            print(f"Duplicated event {j} in {i}")
-            continue
         tournament_item = driver.find_element(By.CSS_SELECTOR, "[class='chakra-menu__menu-button css-1142au9']")
         wait.until(EC.element_to_be_clickable(tournament_item))
         tournament_item.click()
         try:
-            tournament = driver.find_elements(By.CLASS_NAME, "css-mcc4c4")[2].find_element(By.XPATH, f"""//*[contains(text(), "{j}")]""")
+            tournament = driver.find_elements(By.CLASS_NAME, "css-mcc4c4")[2].find_element(By.CSS_SELECTOR, f"[data-index='{j}']")
         except:
-            print(f"Could not find {j} in {i}")
+            print(f'Could not find {j} in {i}')
             continue
         actions.move_to_element(tournament).perform()
         wait.until(EC.element_to_be_clickable(tournament))
         tournament.click()
-        wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "[aria-label='Download']")))
+        wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "[class='chakra-table css-hgyitk']")))
         driver.execute_script("window.stop();")
-        download = driver.find_element(By.CSS_SELECTOR, "[aria-label='Download']")
-        actions.move_to_element(download).perform()
-        wait.until(EC.element_to_be_clickable(download))
-        download.click()
+        table = driver.find_element(By.CSS_SELECTOR, "[class='chakra-table css-hgyitk']")
         description = driver.find_element(By.CSS_SELECTOR, "[class='chakra-text css-d6i95f']").text
         if description.startswith('Through Week Ending'):
-            description = description.replace('Through Week Ending: ', ' , ')
+            description = description.replace('Through Week Ending: ', f'{driver.find_elements(By.CLASS_NAME, 'css-bq4mok')[2].text.split('\n')[1]}, ')
             description = description.replace('/', '-')
         else:
             description = description.replace('Through the ', '')
-        while not os.path.exists(SAVE_DIRECTORY + 'stats.csv'):
-            time.sleep(1)
-        text = j.replace('/', '-')
-        text = text.replace(':', '')
-        os.rename(SAVE_DIRECTORY + 'stats.csv', f'{SAVE_DIRECTORY}/{i}_{description.split(', ')[1]}_{text}_Driving Accuracy.csv')
-    
+        split = description.split(', ')
+        with open(SAVE_DIRECTORY + f'{i}_{split[1]}_{split[0].replace('/', '-')}_SG_Total.csv', 'w+') as file:
+            wr = csv.writer(file)
+            for row in table.find_elements(By.CSS_SELECTOR, 'tr'):
+                wr.writerow([d.text for d in row.find_elements(By.CSS_SELECTOR, 'th,td')])
+                
 driver.close()
