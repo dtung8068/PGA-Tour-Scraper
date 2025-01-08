@@ -4,25 +4,24 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
-import os
-import time
 import csv
 
 capa = DesiredCapabilities.CHROME
 capa["pageLoadStrategy"] = "none"
 
+VARIABLE = 'SG_Total'
 
-SAVE_DIRECTORY = 'data/SG_Total/'
+SAVE_DIRECTORY = f'data/{VARIABLE}/'
 
 options = webdriver.ChromeOptions() 
 options.add_argument('--ignore-certificate-errors')
 options.add_argument('--ignore-ssl-errors')
 options.add_argument("--start-maximized")
-prefs = {'download.default_directory': r"C:\Users\tungd\Downloads\PGA-Tour-Scraper\data\SG_Total",
+prefs = {'download.default_directory': rf"C:\Users\tungd\Downloads\PGA-Tour-Scraper\data\{VARIABLE}",
          'download.prompt_for_download': False}
 options.add_experimental_option('prefs', prefs)
 driver = webdriver.Chrome(options=options)
-driver.get('https://www.pgatour.com/stats/detail/02675')
+driver.get('https://www.pgatour.com/stats/detail/02675') #SG Total
 #https://www.pgatour.com/stats/detail/02674 SG T2G
 #https://www.pgatour.com/stats/detail/02415 Use to calculate number of pars per round
 #https://www.pgatour.com/stats/detail/107 Birdies
@@ -57,11 +56,14 @@ for i in year_list:
 wait.until(EC.element_to_be_clickable(year_item))
 year_item.click()
 
-for i in copy_year_list:
+for i in copy_year_list[9:10]:
     year_item = driver.find_element(By.CSS_SELECTOR, "[aria-label='Season']")
     wait.until(EC.element_to_be_clickable(year_item))
     year_item.click()
-    year = driver.find_element(By.CLASS_NAME, "css-mcc4c4").find_element(By.XPATH, f"//*[contains(text(), '{i}')]")
+    if i == '2013':
+        year = driver.find_element(By.CLASS_NAME, "css-mcc4c4").find_elements(By.XPATH, f"//*[contains(text(), '{i}')]")[1]
+    else:
+        year = driver.find_element(By.CLASS_NAME, "css-mcc4c4").find_element(By.XPATH, f"//*[contains(text(), '{i}')]")
     actions.move_to_element(year).perform()
     wait.until(EC.element_to_be_clickable(year))
     year.click()
@@ -101,7 +103,7 @@ for i in copy_year_list:
         else:
             description = description.replace('Through the ', '')
         split = description.split(', ')
-        with open(SAVE_DIRECTORY + f'{i}_{split[1]}_{split[0].replace('/', '-')}_SG_Total.csv', 'w+') as file:
+        with open(SAVE_DIRECTORY + f'{i}_{split[1]}_{split[0].replace('/', '-')}_{VARIABLE}.csv', 'w+') as file:
             wr = csv.writer(file)
             for row in table.find_elements(By.CSS_SELECTOR, 'tr'):
                 wr.writerow([d.text for d in row.find_elements(By.CSS_SELECTOR, 'th,td')])

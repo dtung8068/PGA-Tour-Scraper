@@ -3,18 +3,24 @@ from dateutil import parser
 import pandas as pd
 import os
 
-TABLE = 'SG_T2G'
+TABLE = 'Driving Accuracy'
 FILE_DIRECTORY = f'data/{TABLE}/'
 
-for i in os.listdir(FILE_DIRECTORY):
-    df = pd.read_csv(FILE_DIRECTORY + i)
+files = [i for i in os.listdir(FILE_DIRECTORY)]
+files.sort(key=lambda x: os.path.getctime(os.path.join(FILE_DIRECTORY, x)))
+
+current_year = '2004'
+
+for i in files:
+    df = pd.read_csv(FILE_DIRECTORY + i, encoding='unicode-escape')
     tournament = i.split(f'_{TABLE}')[0].split('_')
-    if '-' in tournament[0]: #Try to infer year
+    if '-' in tournament[0]:
         years = tournament[0].split('-')
-        if datetime.weekday(parser.parse(years[0] + ' ' + tournament[1])) > datetime.weekday(parser.parse(years[1] + ' ' + tournament[1])):
-            tournament[0] = years[0]
-        else:
-            tournament[0] = years[1]
-    df['TOURNAMENT_DATE'] = datetime.strftime(parser.parse(tournament[0] + ' ' + tournament[1]), "%Y-%m-%d")
+        if 'Jan' in tournament[1]:
+            current_year = years[1]
+    else:
+        current_year = tournament[0]
+    df['TOURNAMENT_DATE'] = datetime.strftime(parser.parse(current_year + ' ' + tournament[1]), "%Y-%m-%d")
     df['TOURNAMENT_NAME'] = tournament[2]
-    df.to_csv(FILE_DIRECTORY + i, index=False)
+    print(df) 
+    #df.to_csv(FILE_DIRECTORY + i, index=False)
