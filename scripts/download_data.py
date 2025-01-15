@@ -9,7 +9,7 @@ import csv
 capa = DesiredCapabilities.CHROME
 capa["pageLoadStrategy"] = "none"
 
-VARIABLE = 'Birdie_Bogey_Ratio'
+VARIABLE = 'Driving_Distance'
 SAVE_DIRECTORY = f'data/{VARIABLE}/'
 
 options = webdriver.ChromeOptions() 
@@ -20,7 +20,7 @@ prefs = {'download.default_directory': rf"C:\Users\tungd\Downloads\PGA-Tour-Scra
          'download.prompt_for_download': False}
 options.add_experimental_option('prefs', prefs)
 driver = webdriver.Chrome(options=options)
-driver.get('https://www.pgatour.com/stats/detail/02415') #SG Total
+driver.get('https://www.pgatour.com/stats/detail/101') #SG Total
 #https://www.pgatour.com/stats/detail/02674 SG T2G
 #https://www.pgatour.com/stats/detail/02415 Use to calculate number of pars per round
 #https://www.pgatour.com/stats/detail/107 Birdies
@@ -62,7 +62,6 @@ for i in copy_year_list[26:27]:
     if i == '2013':
         year = driver.find_element(By.CLASS_NAME, "css-mcc4c4").find_elements(By.XPATH, f"//*[contains(text(), '{i}')]")[1]
     else:
-        break
         year = driver.find_element(By.CLASS_NAME, "css-mcc4c4").find_element(By.XPATH, f"//*[contains(text(), '{i}')]")
     actions.move_to_element(year).perform()
     wait.until(EC.element_to_be_clickable(year))

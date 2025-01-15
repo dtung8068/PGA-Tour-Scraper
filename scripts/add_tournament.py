@@ -3,7 +3,7 @@ from dateutil import parser
 import pandas as pd
 import os
 
-TABLE = 'SG_Total/'
+TABLE = 'Driving_Distance'
 FILE_DIRECTORY = f'data/{TABLE}/'
 
 files = [i for i in os.listdir(FILE_DIRECTORY)]
