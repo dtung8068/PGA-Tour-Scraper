@@ -3,7 +3,7 @@ from dateutil import parser
 import pandas as pd
 import os
 
-TABLE = 'Driving Accuracy'
+TABLE = 'SG_Total/'
 FILE_DIRECTORY = f'data/{TABLE}/'
 
 files = [i for i in os.listdir(FILE_DIRECTORY)]
@@ -22,5 +22,4 @@ for i in files:
         current_year = tournament[0]
     df['TOURNAMENT_DATE'] = datetime.strftime(parser.parse(current_year + ' ' + tournament[1]), "%Y-%m-%d")
     df['TOURNAMENT_NAME'] = tournament[2]
-    print(df) 
-    #df.to_csv(FILE_DIRECTORY + i, index=False)
+    df.to_csv(FILE_DIRECTORY + i, index=False)
