@@ -1,4 +1,3 @@
--- Deaggregates totals, returns data for each player and tournament
 SELECT
 	*
 FROM

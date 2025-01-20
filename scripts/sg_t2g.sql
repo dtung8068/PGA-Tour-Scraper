@@ -1,4 +1,3 @@
--- Deaggregates T2G, returns data for each player and tournament
 SELECT
 	*
 FROM
@@ -62,7 +61,18 @@ FROM
 							"MEASURED ROUNDS" ASC
 					) AS DIFF_ROUNDS
 				FROM
-					SG_T2G
+					(
+						SELECT
+							PLAYER,
+							TOURNAMENT_DATE,
+							TOURNAMENT_NAME,
+							"SG:OTT" * "MEASURED ROUNDS" AS "SG:OTT",
+							"SG:APR" * "MEASURED ROUNDS" AS "SG:APR",
+							"SG:ARG" * "MEASURED ROUNDS" AS "SG:ARG",
+							"MEASURED ROUNDS"
+						FROM
+							SG_T2G
+					)
 			)
 	)
 WHERE
