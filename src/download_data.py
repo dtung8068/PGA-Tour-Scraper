@@ -11,6 +11,16 @@ capa["pageLoadStrategy"] = "none"
 
 VARIABLE = 'Driving_Distance'
 SAVE_DIRECTORY = f'data/{VARIABLE}/'
+LINK_DICT = {
+    'SG_Total': 'https://www.pgatour.com/stats/detail/101',
+    'SG_T2G': 'https://www.pgatour.com/stats/detail/02674',
+    'Pars_Per_Round': 'https://www.pgatour.com/stats/detail/02415',
+    'Birdies': 'https://www.pgatour.com/stats/detail/107',
+    'Bogeys': 'https://www.pgatour.com/stats/detail/02419',
+    'Driving_Distance': 'https://www.pgatour.com/stats/detail/101',
+    'Driving_Accuracy': 'https://www.pgatour.com/stats/detail/102',
+    'Money_List': 'https://www.pgatour.com/stats/detail/109'
+}
 
 options = webdriver.ChromeOptions() 
 options.add_argument('--ignore-certificate-errors')
@@ -20,14 +30,7 @@ prefs = {'download.default_directory': rf"C:\Users\tungd\Downloads\PGA-Tour-Scra
          'download.prompt_for_download': False}
 options.add_experimental_option('prefs', prefs)
 driver = webdriver.Chrome(options=options)
-driver.get('https://www.pgatour.com/stats/detail/101') #SG Total
-#https://www.pgatour.com/stats/detail/02674 SG T2G
-#https://www.pgatour.com/stats/detail/02415 Use to calculate number of pars per round
-#https://www.pgatour.com/stats/detail/107 Birdies
-#https://www.pgatour.com/stats/detail/02419 Bogeys
-#https://www.pgatour.com/stats/detail/101 #Driving Distance
-#https://www.pgatour.com/stats/detail/102 #Driving Accuracy
-#https://www.pgatour.com/stats/detail/109 #Money List (Finishing Position)
+driver.get(LINK_DICT[VARIABLE])
 wait = WebDriverWait(driver, 20)
 actions = ActionChains(driver)
 
