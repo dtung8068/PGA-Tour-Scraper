@@ -2,8 +2,15 @@ from datetime import datetime
 from dateutil import parser
 import pandas as pd
 import os
+import argparse
 
-TABLE = 'Driving_Distance'
+parser = argparse.ArgumentParser(description='Folder to clean')
+parser.add_argument('--variable', type=str, help='Variable to download',
+                    choices=['SG_Total', 'SG_T2G', 'Birdie_Bogey_Ratio', 'Birdies', 'Bogeys', 'Driving_Distance',
+                             'Driving_Accuracy', 'Tournament_Results'], default='SG_Total')
+args = parser.parse_args()
+
+TABLE = args.variable
 FILE_DIRECTORY = f'data/{TABLE}/'
 
 files = [i for i in os.listdir(FILE_DIRECTORY)]

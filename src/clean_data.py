@@ -1,6 +1,12 @@
 import pandas as pd
+import argparse
 
-FOLDER = 'Driving_Accuracy'
+parser = argparse.ArgumentParser(description='Folder to clean')
+parser.add_argument('--variable', type=str, help='Variable to download',
+                    choices=['SG_Total', 'SG_T2G', 'Birdie_Bogey_Ratio', 'Birdies', 'Bogeys', 'Driving_Distance',
+                             'Driving_Accuracy', 'Tournament_Results'], default='SG_Total')
+args = parser.parse_args()
+FOLDER = args.variable
 
 data = pd.read_csv(f'data/{FOLDER}/{FOLDER.lower()}.csv', encoding='utf-8')
 try:
