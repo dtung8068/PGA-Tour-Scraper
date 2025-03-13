@@ -10,16 +10,18 @@ capa = DesiredCapabilities.CHROME
 capa["pageLoadStrategy"] = "none"
 
 VARIABLE = 'Driving_Distance'
-SAVE_DIRECTORY = f'data/{VARIABLE}/'
+START_YEAR = 2013
+END_YEAR = 2021
+SAVE_DIRECTORY = f'data/{VARIABLE}test/'
 LINK_DICT = {
     'SG_Total': 'https://www.pgatour.com/stats/detail/101',
     'SG_T2G': 'https://www.pgatour.com/stats/detail/02674',
-    'Pars_Per_Round': 'https://www.pgatour.com/stats/detail/02415',
+    'Birdie_Bogey_Ratio': 'https://www.pgatour.com/stats/detail/02415',
     'Birdies': 'https://www.pgatour.com/stats/detail/107',
     'Bogeys': 'https://www.pgatour.com/stats/detail/02419',
     'Driving_Distance': 'https://www.pgatour.com/stats/detail/101',
     'Driving_Accuracy': 'https://www.pgatour.com/stats/detail/102',
-    'Money_List': 'https://www.pgatour.com/stats/detail/109'
+    'Tournament_Results': 'https://www.pgatour.com/stats/detail/109'
 }
 
 options = webdriver.ChromeOptions() 
@@ -35,17 +37,16 @@ wait = WebDriverWait(driver, 20)
 actions = ActionChains(driver)
 
 #Tournament Only
-"""
-toggle_item = driver.find_element(By.CSS_SELECTOR, "[aria-label='Time Period']")
-wait.until(EC.element_to_be_clickable(toggle_item))
-toggle_item.click()
-tournament_only = driver.find_elements(By.CLASS_NAME, "css-mcc4c4")[1].find_element(By.XPATH, "//*[contains(text(), 'Tournament Only')]")
-actions.move_to_element(tournament_only).perform()
-wait.until(EC.element_to_be_clickable(tournament_only))
-tournament_only.click()
-wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "[class='chakra-menu__menu-button css-1142au9']")))
-driver.execute_script("window.stop();")
-"""
+if VARIABLE == 'Tournament_Results':
+    toggle_item = driver.find_element(By.CSS_SELECTOR, "[aria-label='Time Period']")
+    wait.until(EC.element_to_be_clickable(toggle_item))
+    toggle_item.click()
+    tournament_only = driver.find_elements(By.CLASS_NAME, "css-mcc4c4")[1].find_element(By.XPATH, "//*[contains(text(), 'Tournament Only')]")
+    actions.move_to_element(tournament_only).perform()
+    wait.until(EC.element_to_be_clickable(tournament_only))
+    tournament_only.click()
+    wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "[class='chakra-menu__menu-button css-1142au9']")))
+    driver.execute_script("window.stop();")
 
 year_item = driver.find_element(By.CSS_SELECTOR, "[aria-label='Season']")
 wait.until(EC.element_to_be_clickable(year_item))
@@ -54,11 +55,13 @@ year_list = driver.find_element(By.CLASS_NAME, "css-mcc4c4").find_elements(By.CS
 year_list.pop(0)
 copy_year_list = []
 for i in year_list:
-    copy_year_list.insert(0, i.text)
+    year = int(i.text.split('-')[-1])
+    if year >= START_YEAR and year <= END_YEAR:
+        copy_year_list.insert(0, i.text)
 wait.until(EC.element_to_be_clickable(year_item))
 year_item.click()
 
-for i in copy_year_list[26:27]:
+for i in copy_year_list:
     year_item = driver.find_element(By.CSS_SELECTOR, "[aria-label='Season']")
     wait.until(EC.element_to_be_clickable(year_item))
     year_item.click()
